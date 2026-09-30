@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>たべどきくん</title>
+        <style>
+            :root{
+                --primary-color: #ff6b6b;
+                --secondary-color: #f8f9fa;
+                --card-color: #ffffff;
+                --background-color: #f1f3f5;
+                --text-color: #333333;
+            }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+        .card {
+            background-color: var(--card-color);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        button {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:hover {opacity: 0.9;}
+        #result {
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+        .history-item {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 12px 0;
+        }
+        .history-item:last-child {border-bottom: none;}
+        .history-ingredients {
+            font-weight: bold;
+            font-size: 14px;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        </style>
+    </head>
+    <body>
+
+    <div class="container">
+        <h1>たべどきくん</h1>
+
+        <div class="card">
+            <input id="ingredients" placeholder="食材を入力してください（例: トマト, チーズ）">
+            <button onclick="getRecipe()">AIレシピを生成</button>
+        </div>
+
+        <div class="card" id="result-card" style="display: none;">
+            <h3>生成されたレシピ</h3>
+            <p id="result"></p>
+        </div>
+
+        <div class="card">
+            <h3>過去のレシピ履歴</h3>
+            <div id="history-list"></div>
+        </div>
+    </div>
+
+        <button onclick ="getAPI()">APIテスト</button>
+
+    <p id = "result"></p>
+
+    <script>
+    const API_BASE_URL = "http://127.0.0.1:8000";
+    window.addEventListener('DOMContentLoaded', () => {
+        loadHistory();
+    });
+
+    async function getRecipe() {
+        const ingredientsInput = document.getElementById('ingredients');
+        const resultCard = document.getElementById('result-card');
+        const resultElement = document.getElementById('result');
+
+        if (!ingredientsInput.value.trim()) {
+            alert('食材を入力してください。');
+            return;
+        }
+
+        resultCard.style.display = 'block';
+        resultElement.innerHTML  = '<p class="loading">レシピを生成中...</p>';
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/generate_recipe`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ingredients: ingredientsInput.value})
+            });
+            if (!response.ok) throw new Error('レシピの生成に失敗しました。');
+            const data = await response.json();
+            resultElement.innerText = data.recipe;
+
+            loadHistory();
+
+        } catch (error) {
+            resultElement.innerText = "エラー： レシピの生成に失敗しました。";
+            console.error(error);
+        }
+    }
+
+    async function loadHistory() {
+        const historyList = document.getElementById('history-list');
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/history`);
+            if (!response.ok) throw new Error('履歴の取得に失敗しました。');
+            const historyData = await response.json();
+
+            if (historyData.length === 0) {
+                historyList.innerHTML = "<p style='color: #999; text-align: center;'>履歴はまだありません。</p>";
+                return;
+            }
+
+            historyList.innerHTML = historyData.map(item => 
+                `<div class="history-item">
+                    <div class="history-ingredients">食材: ${item.ingredients}</div>
+                    <p style="white-space: pre-wrap; font-size: 14px; color: #444;">${item.recipe}</p>
+                    <span style="font-size: 11px; color: #999;">${item.created_at || ''}</span>
+                </div>`
+            ).join('');
+
+            } catch (error) {
+                historyList.innerHTML = '<p style="color:red;">履歴の読み込みに失敗しました</p>';
+                console.error(error);
+            }
+    }
+
+    //         data.history.forEach(item => {
+    //             const div = document.createElement('div');
+    //             div.className = 'history-item';
+    //             div.innerHTML = `
+    //                 <div class="history-ingredients">食材: ${item.ingredients}</div>
+    //                 <div>レシピ: ${item.recipe}</div>
+    //             `;
+    //             historyList.appendChild(div);
+    //         });
+    //     } catch (error) {
+    //         historyList.innerText = "エラー： 履歴の取得に失敗しました。";
+    //         console.error(error);
+    //     }
+
+    //     document.getElementById('result-card').style.display = 'none';
+    //     document.getElementById('result').textContent = '';
+    //     const loadingText = document.createElement('p');
+    //     loadingText.className = 'loading';
+    //     loadingText.textContent = 'レシピを生成中...';
+    //     document.getElementById('result').appendChild(loadingText);
+
+    //     try {
+    //         const response = await fetch(`${API_BASE_URL}/generate_recipe`, {
+    //             method: 'POST',
+    //             headers: {'Content-Type': 'application/json'},
+    //             body: JSON.stringify({ingredients})
+    //         });
+    //         if (!response.ok) throw new Error('レシピの生成に失敗しました。');
+    //         const data = await response.json();
+    //         displayResult(data.recipe);
+    //         saveHistory(ingredients, data.recipe);
+    //     } catch (error) {
+    //         alert(error.message);
+    //     } finally {
+    //         loadingText.remove();
+    //     }
+    // }
+    </script>
+    </body>
+</html>

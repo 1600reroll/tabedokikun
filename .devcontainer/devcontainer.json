@@ -1,0 +1,16 @@
+{
+    "name": "tabedokikun",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ritwickdey.liveserver"
+            ]
+        }
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/node:1":{
+            "version": "lts"
+        }
+    }
+}
