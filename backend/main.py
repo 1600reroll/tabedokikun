@@ -87,3 +87,33 @@ async def get_history(limit: int = 5):
     except Exception as e:
         print(f"DB エラー: {e}")
         raise HTTPException(status_code=500, detail="履歴の取得に失敗しました。")
+
+# --- 食材登録のためのデータ構造 ---
+class IngredientRequest(BaseModel):
+    name: str
+    category: str       # 冷蔵 or 常温
+    expiry_date: str    # 賞味期限 (例: "2026-10-10")
+    quantity: int       # 個数
+    notify_days: int    # 通知期限 (例: 1)
+
+# --- 食材を登録するAPI ---
+@app.post("/ingredients")
+async def register_ingredient(req: IngredientRequest):
+    try:
+        # ここでデータベース(db.py)へ保存する処理を呼び出します
+        db.add_ingredient(req.name, req.category, req.expiry_date, req.quantity, req.notify_days)
+        return {"message": "食材が登録されました！", "data": req}
+    except Exception as e:
+        print(f"DB エラー: {e}")
+        raise HTTPException(status_code=500, detail="食材の登録に失敗しました。")
+
+# --- ついでに：登録した食材一覧を取得するAPI ---
+@app.get("/ingredients")
+async def get_ingredients():
+    try:
+        # データベース(db.py)から食材一覧を取得する処理
+        return db.get_ingredients()
+        
+        return {"ingredients": []} # とりあえず空のリストを返しておく
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="食材の取得に失敗しました。")
