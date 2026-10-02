@@ -7,7 +7,7 @@ export default function MainDashboard() {
   const [counts, setCounts] = useState({ fridge: 0, 'room-temp': 0 });
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/ingredients')
+    fetch('http://localhost:8000/ingredients')
       .then(res => res.json())
       .then((data: any[]) => {
         const fridgeCount = data.filter(item => item.category === 'fridge').length;
