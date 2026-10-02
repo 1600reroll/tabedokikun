@@ -10,13 +10,23 @@ export default function FoodDetail() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showDeletedModal, setShowDeletedModal] = useState(false);
 
+  // useEffect(() => {
+  //   const localFoods = localStorage.getItem('my_food_list');
+  //   if (localFoods) {
+  //     const allFoods = JSON.parse(localFoods);
+  //     const foundItem = allFoods.find((item: any) => item.id.toString() === id);
+  //     setFoodItem(foundItem);
+  //   }
+  // }, [id]);
   useEffect(() => {
-    const localFoods = localStorage.getItem('my_food_list');
-    if (localFoods) {
-      const allFoods = JSON.parse(localFoods);
-      const foundItem = allFoods.find((item: any) => item.id.toString() === id);
-      setFoodItem(foundItem);
-    }
+    // 💡 バックエンドから全ての食材を取得し、URLのidと一致するものを探します
+    fetch('http://localhost:8000/ingredients')
+      .then(res => res.json())
+      .then((data: any[]) => {
+        const foundItem = data.find((item: any) => item.id.toString() === id);
+        setFoodItem(foundItem);
+      })
+      .catch(err => console.error("データ取得失敗", err));
   }, [id]);
 
   if (!foodItem) {
@@ -32,7 +42,7 @@ export default function FoodDetail() {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
-  const daysLeft = getRemainingDays(foodItem.expiry);
+  const daysLeft = getRemainingDays(foodItem.expiry_date);
 
   const handleDelete = () => {
     const localFoods = localStorage.getItem('my_food_list');

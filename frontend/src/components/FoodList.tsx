@@ -9,45 +9,55 @@ export default function FoodList() {
 
   useEffect(() => {
     const currentCategory = category || 'fridge';
-    let allFoods: any[] = [];
-    const localFoods = localStorage.getItem('my_food_list');
+    // let allFoods: any[] = [];
+    // const localFoods = localStorage.getItem('my_food_list');
     
-    // 💾 1. セーブデータがあれば読み込む
-    if (localFoods) {
-      try {
-        allFoods = JSON.parse(localFoods);
-      } catch (e) {
-        allFoods = [];
-      }
-    }
+    // // 💾 1. セーブデータがあれば読み込む
+    // if (localFoods) {
+    //   try {
+    //     allFoods = JSON.parse(localFoods);
+    //   } catch (e) {
+    //     allFoods = [];
+    //   }
+    // }
 
-    // 今のカテゴリ（fridgeなど）のデータだけを抽出
-    let filtered = allFoods.filter((item: any) => item.category === currentCategory);
+    // // 今のカテゴリ（fridgeなど）のデータだけを抽出
+    // let filtered = allFoods.filter((item: any) => item.category === currentCategory);
 
-    // 🚨 2. 自己修復ロジック：抽出した結果が0件だった場合（古いデータが残っている場合）
-    // 強制的に設計図通りの新しいダミーデータを生成して上書き保存します！
-    if (filtered.length === 0) {
-      const defaultFridge = [
-        { id: 101, name: "牛乳", expiry: getFutureDateStr(4), category: "fridge", quantity: "1本" },
-        { id: 102, name: "卵", expiry: getFutureDateStr(5), category: "fridge", quantity: "1パック" },
-        { id: 103, name: "ヨーグルト", expiry: getFutureDateStr(12), category: "fridge", quantity: "1個" },
-        { id: 104, name: "チーズ", expiry: getFutureDateStr(18), category: "fridge", quantity: "1袋" },
-        { id: 105, name: "豆腐", expiry: getFutureDateStr(3), category: "fridge", quantity: "1丁" },
-      ];
-      const defaultRoomTemp = [
-        { id: 1, name: "パン", expiry: getFutureDateStr(4), category: "room-temp", quantity: "1袋" },
-        { id: 2, name: "お米", expiry: getFutureDateStr(60), category: "room-temp", quantity: "5kg" },
-      ];
+    // // 🚨 2. 自己修復ロジック：抽出した結果が0件だった場合（古いデータが残っている場合）
+    // // 強制的に設計図通りの新しいダミーデータを生成して上書き保存します！
+    // if (filtered.length === 0) {
+    //   const defaultFridge = [
+    //     { id: 101, name: "牛乳", expiry: getFutureDateStr(4), category: "fridge", quantity: "1本" },
+    //     { id: 102, name: "卵", expiry: getFutureDateStr(5), category: "fridge", quantity: "1パック" },
+    //     { id: 103, name: "ヨーグルト", expiry: getFutureDateStr(12), category: "fridge", quantity: "1個" },
+    //     { id: 104, name: "チーズ", expiry: getFutureDateStr(18), category: "fridge", quantity: "1袋" },
+    //     { id: 105, name: "豆腐", expiry: getFutureDateStr(3), category: "fridge", quantity: "1丁" },
+    //   ];
+    //   const defaultRoomTemp = [
+    //     { id: 1, name: "パン", expiry: getFutureDateStr(4), category: "room-temp", quantity: "1袋" },
+    //     { id: 2, name: "お米", expiry: getFutureDateStr(60), category: "room-temp", quantity: "5kg" },
+    //   ];
       
-      // まとめてセーブデータを上書き
-      allFoods = [...defaultFridge, ...defaultRoomTemp];
-      localStorage.setItem('my_food_list', JSON.stringify(allFoods));
+    //   // まとめてセーブデータを上書き
+    //   allFoods = [...defaultFridge, ...defaultRoomTemp];
+    //   localStorage.setItem('my_food_list', JSON.stringify(allFoods));
 
-      // 画面に表示するリストをセット
-      filtered = currentCategory === 'room-temp' ? defaultRoomTemp : defaultFridge;
-    }
+    //   // 画面に表示するリストをセット
+    //   filtered = currentCategory === 'room-temp' ? defaultRoomTemp : defaultFridge;
+    // }
 
-    setItems(filtered);
+    // setItems(filtered);
+
+    // バックエンドからデータを取得
+    fetch('http://localhost:8000/ingredients')
+      .then(res => res.json())
+      .then((data: any[]) => {
+        // 現在のカテゴリー（fridge または room-temp）に一致するデータだけを抽出
+        const filtered = data.filter(item => item.category === currentCategory);
+        setItems(filtered);
+      })
+      .catch(err => console.error("データ取得失敗", err));
   }, [category]);
 
   // 今日の日付から「設計図通りの残り日数」を足した日付文字列(YYYY-MM-DD)を作る関数
@@ -87,7 +97,7 @@ export default function FoodList() {
         {/* リスト部分 */}
         <div className="space-y-4">
           {items.map((item, index) => {
-            const daysLeft = getRemainingDays(item.expiry);
+            const daysLeft = getRemainingDays(item.expiry_date);
             
             // 🎨 設計図のデザイン（カラーシステム）を完全に再現
             let cardBgColor = "bg-white border-gray-400";
@@ -128,7 +138,7 @@ export default function FoodList() {
                 {/* カード下部：賞味期限日付 */}
                 <div className="flex justify-between items-end mt-4">
                   <span className="text-gray-500 font-bold text-sm">賞味期限</span>
-                  <span className="text-lg font-bold font-mono tracking-wide text-gray-600">{item.expiry}</span>
+                  <span className="text-lg font-bold font-mono tracking-wide text-gray-600">{item.expiry_date}</span>
                 </div>
               </div>
             );

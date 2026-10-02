@@ -122,8 +122,8 @@ export default function ManualRegister() {
                 onChange={(e) => setCategory1(e.target.value)}
                 className="border-2 border-gray-400 rounded-xl px-3 py-1 text-base font-bold text-gray-700 bg-white focus:outline-none"
               >
-                <option value="fridge">冷蔵 ▾</option>
-                <option value="room-temp">常温 ▾</option>
+                <option value="fridge">冷蔵</option>
+                <option value="room-temp">常温</option>
               </select>
             </div>
 
@@ -170,8 +170,8 @@ export default function ManualRegister() {
                 onChange={(e) => setCategory2(e.target.value)}
                 className="border-2 border-gray-400 rounded-xl px-3 py-1 text-base font-bold text-gray-700 bg-white focus:outline-none"
               >
-                <option value="fridge">冷蔵 ▾</option>
-                <option value="room-temp">常温 ▾</option>
+                <option value="fridge">冷蔵</option>
+                <option value="room-temp">常温</option>
               </select>
             </div>
 
