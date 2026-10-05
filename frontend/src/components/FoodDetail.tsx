@@ -116,7 +116,8 @@ export default function FoodDetail() {
           <div className="border-t border-gray-200 mt-6 pt-4">
             <div className="text-xs font-bold text-gray-500 mb-0.5">登録日</div>
             <div className="text-sm font-bold font-mono tracking-wide">
-              {new Date().toISOString().split('T')[0]}
+              {/* {new Date().toISOString().split('T')[0]} */}
+              {foodItem.created_at.split(' ')[0]}
             </div>
           </div>
         </div>
