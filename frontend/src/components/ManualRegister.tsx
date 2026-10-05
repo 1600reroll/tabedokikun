@@ -136,7 +136,8 @@ export default function ManualRegister() {
                 <label className="text-xs font-bold text-gray-400">個数</label>
                 <div className="flex items-center border-2 border-gray-700 rounded-xl overflow-hidden bg-white">
                   <button onClick={() => setCount1(Math.max(1, count1 - 1))} className="px-4 py-2 font-bold text-xl border-r border-gray-300 bg-gray-50">-</button>
-                  <span className="w-16 text-center font-bold text-lg">{count1}</span>
+                  {/* <span className="w-16 text-center font-bold text-lg">{count1}</span> */}
+                  <input type="number" value={count1 === 0 ? "" : count1} onChange={(e) => setCount1(Number(e.target.value))} className="w-16 text-center font-bold text-lg bg-transparent outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"/>
                   <button onClick={() => setCount1(count1 + 1)} className="px-4 py-2 font-bold text-xl border-l border-gray-300 bg-gray-50">+</button>
                 </div>
               </div>
