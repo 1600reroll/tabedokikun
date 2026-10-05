@@ -100,7 +100,7 @@ export default function FoodDetail() {
               <span className="text-gray-400 text-xl">🔔</span>
               <div>
                 <div className="text-xs font-bold text-gray-500 mb-0.5">通知設定</div>
-                <div className="text-sm font-bold tracking-wide">2日前に通知</div>
+                <div className="text-sm font-bold tracking-wide">{foodItem.notify_days}日前に通知</div>
               </div>
             </div>
 
