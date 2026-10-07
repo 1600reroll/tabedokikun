@@ -76,3 +76,14 @@ def get_ingredients():
     rows = cursor.fetchall()
     conn.close()
     return [dict(row) for row in rows]
+
+def delete_ingredient(ingredient_id: int):
+    # ⚠️ "database.db" の部分は、このファイルの上の方で使われているデータベースファイル名に合わせてください（例: "app.db" や "tabedoki.db" など）
+    conn = sqlite3.connect(DB_PATH)  # データベースファイルのパスを指定   
+    cursor = conn.cursor()
+    
+    # ingredients テーブルから、指定されたIDのデータを削除する
+    cursor.execute("DELETE FROM ingredients WHERE id = ?", (ingredient_id,))
+    
+    conn.commit()
+    conn.close()

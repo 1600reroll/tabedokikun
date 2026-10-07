@@ -118,3 +118,14 @@ async def get_ingredients():
         return {"ingredients": []} # とりあえず空のリストを返しておく
     except Exception as e:
         raise HTTPException(status_code=500, detail="食材の取得に失敗しました。")
+
+# --- 食材を削除するAPI ---
+@app.delete("/ingredients/{ingredient_id}")
+async def delete_ingredient(ingredient_id: int):
+    try:
+        # データベース(db.py)から対象のIDの食材を削除する処理を呼び出す
+        db.delete_ingredient(ingredient_id)
+        return {"message": "食材を削除しました"}
+    except Exception as e:
+        print(f"DB エラー: {e}")
+        raise HTTPException(status_code=500, detail="食材の削除に失敗しました。")

@@ -44,16 +44,37 @@ export default function FoodDetail() {
 
   const daysLeft = getRemainingDays(foodItem.expiry_date);
 
-  const handleDelete = () => {
-    const localFoods = localStorage.getItem('my_food_list');
-    if (localFoods) {
-      const allFoods = JSON.parse(localFoods);
-      const newFoods = allFoods.filter((item: any) => item.id.toString() !== id);
-      localStorage.setItem('my_food_list', JSON.stringify(newFoods));
+  // const handleDelete = () => {
+  //   const localFoods = localStorage.getItem('my_food_list');
+  //   if (localFoods) {
+  //     const allFoods = JSON.parse(localFoods);
+  //     const newFoods = allFoods.filter((item: any) => item.id.toString() !== id);
+  //     localStorage.setItem('my_food_list', JSON.stringify(newFoods));
+  //   }
+  //   setShowConfirmModal(false);
+  //   setShowDeletedModal(true);
+  // };
+
+  const handleDelete = async () => {
+  try {
+    // 1. バックエンドに削除リクエストを送る（データベースから消す）
+    const response = await fetch(`http://127.0.0.1:8000/ingredients/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      // 2. 成功したら確認画面を閉じて、完了画面を開く
+      setShowConfirmModal(false);
+      setShowDeletedModal(true);
+    } else {
+      console.error("削除に失敗しました");
+      alert("削除に失敗しました。");
     }
-    setShowConfirmModal(false);
-    setShowDeletedModal(true);
-  };
+  } catch (error) {
+    console.error("通信エラー:", error);
+    alert("通信エラーが発生しました。サーバーが起動しているか確認してください。");
+  }
+};
 
   const isFridge = category === 'fridge' || foodItem.category === 'fridge';
   const categoryBadgeColor = isFridge ? "bg-[#bae6fd] text-[#0284c7]" : "bg-[#fed7aa] text-[#c2410c]";
