@@ -55,7 +55,11 @@ export default function FoodList() {
       .then((data: any[]) => {
         // 現在のカテゴリー（fridge または room-temp）に一致するデータだけを抽出
         const filtered = data.filter(item => item.category === currentCategory);
-        setItems(filtered);
+        const sortedData = filtered.sort((a, b) => {
+          return new Date(a.expiry_date).getTime() - new Date(b.expiry_date).getTime();
+        });
+        // setItems(filtered);
+        setItems(sortedData);
       })
       .catch(err => console.error("データ取得失敗", err));
   }, [category]);

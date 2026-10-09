@@ -97,8 +97,9 @@ export default function ManualRegister() {
 
         {/* ℹ️ 水色のアラートインフォ */}
         <div className="bg-[#ccfbf1] border border-[#99f6e4] rounded-2xl p-5 text-center mb-6 shadow-sm">
-          <h4 className="font-bold text-[#0d9488] text-base mb-1">賞味期限と通知設定</h4>
-          <p className="text-xs text-[#0f766e] font-medium">スキャンした商品の期限を確認してください</p>
+          {/* <h4 className="font-bold text-[#0d9488] text-base mb-1">賞味期限と通知設定</h4> */}
+          <h4 className="font-bold text-[#0d9488] text-base mb-1">食材登録</h4>
+          {/* <p className="text-xs text-[#0f766e] font-medium">スキャンした商品の期限を確認してください</p> */}
         </div>
 
         <div className="space-y-6">
